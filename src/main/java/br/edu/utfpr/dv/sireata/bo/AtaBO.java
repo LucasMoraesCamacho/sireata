@@ -12,11 +12,10 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
-import br.edu.utfpr.dv.sireata.dao.AnexoDAO;
-import br.edu.utfpr.dv.sireata.dao.AtaDAO;
-import br.edu.utfpr.dv.sireata.dao.AtaParticipanteDAO;
-import br.edu.utfpr.dv.sireata.dao.OrgaoDAO;
+import br.edu.utfpr.dv.sireata.factory.AtaFactory;
+import br.edu.utfpr.dv.sireata.factory.DAO;
 import br.edu.utfpr.dv.sireata.dao.PautaDAO;
+
 import br.edu.utfpr.dv.sireata.model.Anexo;
 import br.edu.utfpr.dv.sireata.model.Ata;
 import br.edu.utfpr.dv.sireata.model.Pauta;
@@ -30,12 +29,15 @@ import br.edu.utfpr.dv.sireata.model.Orgao;
 import br.edu.utfpr.dv.sireata.model.ParticipanteReport;
 
 public class AtaBO {
+	private AtaFactory dao;
 	
+	public AtaBO() {
+		this.dao = (AtaFactory) DAO.Ata.getAtaInstance();
+	}
+
 	public Ata buscarPorId(int id) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
-			
-			return dao.buscarPorId(id);
+			return (Ata)dao.buscarPorId(id);
 		}catch(Exception e){
 			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
 			
@@ -45,8 +47,6 @@ public class AtaBO {
 	
 	public Ata buscarPorNumero(int idOrgao, TipoAta tipo, int numero, int ano) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
-			
 			return dao.buscarPorNumero(idOrgao, tipo, numero, ano);
 		}catch(Exception e){
 			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
@@ -57,8 +57,6 @@ public class AtaBO {
 	
 	public Ata buscarPorPauta(int idPauta) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
-			
 			return dao.buscarPorPauta(idPauta);
 		}catch(Exception e){
 			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
@@ -69,8 +67,6 @@ public class AtaBO {
 	
 	public int buscarProximoNumeroAta(int idOrgao, int ano, TipoAta tipo) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
-			
 			return dao.buscarProximoNumeroAta(idOrgao, ano, tipo);
 		}catch(Exception e){
 			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
@@ -81,8 +77,6 @@ public class AtaBO {
 	
 	public List<Ata> listarPublicadas() throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
-			
 			return dao.listarPublicadas();
 		}catch(Exception e){
 			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
@@ -93,8 +87,6 @@ public class AtaBO {
 	
 	public List<Ata> listarPorOrgao(int idOrgao) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
-			
 			return dao.listarPorOrgao(idOrgao);
 		}catch(Exception e){
 			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
@@ -105,7 +97,7 @@ public class AtaBO {
 	
 	public List<Ata> listarPorDepartamento(int idDepartamento) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.listarPorDepartamento(idDepartamento);
 		}catch(Exception e){
@@ -117,7 +109,7 @@ public class AtaBO {
 	
 	public List<Ata> listarPorCampus(int idCampus) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.listarPorCampus(idCampus);
 		}catch(Exception e){
@@ -129,7 +121,7 @@ public class AtaBO {
 	
 	public List<Ata> listarNaoPublicadas(int idUsuario) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.listarNaoPublicadas(idUsuario);
 		}catch(Exception e){
@@ -141,7 +133,7 @@ public class AtaBO {
 	
 	public List<Ata> listarPorOrgao(int idOrgao, int idUsuario) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.listarPorOrgao(idOrgao, idUsuario);
 		}catch(Exception e){
@@ -153,7 +145,7 @@ public class AtaBO {
 	
 	public List<Ata> listarPorDepartamento(int idDepartamento, int idUsuario) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.listarPorDepartamento(idDepartamento, idUsuario);
 		}catch(Exception e){
@@ -165,7 +157,7 @@ public class AtaBO {
 	
 	public List<Ata> listarPorCampus(int idCampus, int idUsuario) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.listarPorCampus(idCampus, idUsuario);
 		}catch(Exception e){
@@ -201,7 +193,7 @@ public class AtaBO {
 	
 	public int salvar(Ata ata) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			int id = dao.salvar(ata);
 			
@@ -220,10 +212,8 @@ public class AtaBO {
 			
 			if(ata.getParticipantes() != null){
 				for(AtaParticipante p : ata.getParticipantes()){
-					AtaParticipanteDAO pdao = new AtaParticipanteDAO();
-					
 					p.getAta().setIdAta(id);
-					pdao.salvar(p);
+					DAO.AtaParticipante.getAtaParticipantInstance().salvar(p);
 				}
 			}
 			
@@ -231,11 +221,9 @@ public class AtaBO {
 				int i = 1;
 				
 				for(Anexo a : ata.getAnexos()) {
-					AnexoDAO adao = new AnexoDAO();
-					
 					a.getAta().setIdAta(id);
 					a.setOrdem(i);
-					adao.salvar(a);
+					DAO.Anexo.getAttachmentInstance().salvar(a);
 					i++;
 				}
 			}
@@ -254,7 +242,7 @@ public class AtaBO {
 	
 	public boolean temComentarios(int idAta) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.temComentarios(idAta);
 		}catch(Exception e){
@@ -266,7 +254,7 @@ public class AtaBO {
 	
 	public boolean isPresidenteOuSecretario(int idUsuario, int idAta) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.isPresidenteOuSecretario(idUsuario, idAta);
 		}catch(Exception e){
@@ -278,7 +266,7 @@ public class AtaBO {
 	
 	public boolean isPresidente(int idUsuario, int idAta) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.isPresidente(idUsuario, idAta);
 		}catch(Exception e){
@@ -290,7 +278,7 @@ public class AtaBO {
 	
 	public boolean isPublicada(int idAta) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.isPublicada(idAta);
 		}catch(Exception e){
@@ -306,7 +294,7 @@ public class AtaBO {
 	
 	public void liberarComentarios(int idAta) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			dao.liberarComentarios(idAta);
 		}catch(Exception e){
@@ -322,7 +310,7 @@ public class AtaBO {
 	
 	public void bloquearComentarios(int idAta) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			
 			dao.bloquearComentarios(idAta);
 		}catch(Exception e){
@@ -382,7 +370,6 @@ public class AtaBO {
 			ata.setParticipantes(apbo.listarPorAta(idAta));
 			
 			for(AtaParticipante participante : ata.getParticipantes()){
-				OrgaoDAO odao = new OrgaoDAO();
 				ParticipanteReport pr = new ParticipanteReport();
 				
 				pr.setNome(participante.getParticipante().getNome() + (participante.getDesignacao().isEmpty() ? "" : " (" + participante.getDesignacao() + ")"));
@@ -460,7 +447,7 @@ public class AtaBO {
 	
 	public void publicar(int idAta) throws Exception{
 		try{
-			AtaDAO dao = new AtaDAO();
+			
 			byte[] pdf = this.gerarAta(idAta);
 			
 			dao.publicar(idAta, pdf);
@@ -480,7 +467,7 @@ public class AtaBO {
 				throw new Exception("A ata já foi publicada e não pode ser excluída.");
 			}
 			
-			AtaDAO dao = new AtaDAO();
+			
 			
 			return dao.excluir(idAta);
 		}catch(Exception e){

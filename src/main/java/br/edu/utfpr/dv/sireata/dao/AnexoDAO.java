@@ -8,10 +8,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.edu.utfpr.dv.sireata.factory.AttachmentFactory;
 import br.edu.utfpr.dv.sireata.model.Anexo;
 
-public class AnexoDAO {
-	
+public class AnexoDAO implements AttachmentFactory {
+	@Override
 	public Anexo buscarPorId(int id) throws SQLException{
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -32,15 +33,11 @@ public class AnexoDAO {
 				return null;
 			}
 		}finally{
-			if((rs != null) && !rs.isClosed())
-				rs.close();
-			if((stmt != null) && !stmt.isClosed())
-				stmt.close();
-			if((conn != null) && !conn.isClosed())
-				conn.close();
+			FinallyConnection(conn, stmt, rs);
 		}
 	}
 	
+	@Override
 	public List<Anexo> listarPorAta(int idAta) throws SQLException{
 		Connection conn = null;
 		Statement stmt = null;
@@ -61,16 +58,13 @@ public class AnexoDAO {
 			
 			return list;
 		}finally{
-			if((rs != null) && !rs.isClosed())
-				rs.close();
-			if((stmt != null) && !stmt.isClosed())
-				stmt.close();
-			if((conn != null) && !conn.isClosed())
-				conn.close();
+			FinallyConnection(conn, stmt, rs);
 		}
 	}
 	
-	public int salvar(Anexo anexo) throws SQLException{
+	@Override
+	public int salvar(Object obj) throws SQLException {
+		Anexo anexo = (Anexo) obj;
 		boolean insert = (anexo.getIdAnexo() == 0);
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -106,15 +100,11 @@ public class AnexoDAO {
 			
 			return anexo.getIdAnexo();
 		}finally{
-			if((rs != null) && !rs.isClosed())
-				rs.close();
-			if((stmt != null) && !stmt.isClosed())
-				stmt.close();
-			if((conn != null) && !conn.isClosed())
-				conn.close();
+			FinallyConnection(conn, stmt, rs);
 		}
 	}
 	
+	@Override
 	public void excluir(int id) throws SQLException{
 		Connection conn = null;
 		Statement stmt = null;
@@ -125,10 +115,7 @@ public class AnexoDAO {
 		
 			stmt.execute("DELETE FROM anexos WHERE idanexo=" + String.valueOf(id));
 		}finally{
-			if((stmt != null) && !stmt.isClosed())
-				stmt.close();
-			if((conn != null) && !conn.isClosed())
-				conn.close();
+			FinallyConnection2(conn, stmt);
 		}
 	}
 	
@@ -143,5 +130,28 @@ public class AnexoDAO {
 		
 		return anexo;
 	}
+	public void FinallyConnection(Connection conn, Statement stmt, ResultSet rs) throws SQLException{
+		if((rs != null) && !rs.isClosed())
+			rs.close();
+		if((stmt != null) && !stmt.isClosed())
+			 stmt.close();
+		if((conn != null) && !conn.isClosed())
+			 conn.close();
+	}
+	public void FinallyConnection2(Connection conn, Statement stmt) throws SQLException{
+		if((stmt != null) && !stmt.isClosed())
+				stmt.close();
+			if((conn != null) && !conn.isClosed())
+				conn.close();
+	}
 
+    @Override
+    public boolean delete(Object obj) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Object listForAta(int idAta) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
